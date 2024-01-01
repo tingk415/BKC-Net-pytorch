@@ -44,11 +44,11 @@ class CLSCriterion(object):
     def reset(self):
         self.acc = 0
         self.conf_mat = np.zeros([self.num, self.num])
-        self.auc5 = [[], [], [], [], []]  # 各类别计算对应的指标
-        self.label5 = [[], [], [], [], []]  # 各类别计算对应的指标
-        self.labels = []  # 五分类对应的指标
-        self.aucs = []  # 五分类对应的指标
-        self.preds_index = [[], [], [], [], []]
+        self.auc5 = [[] for _ in range(12)] # 各类别计算对应的指标
+        self.label5 = [[] for _ in range(12)]  # 各类别计算对应的指标
+        self.labels = []  # 12分类对应的指标
+        self.aucs = []  # 12分类对应的指标
+        self.preds_index = [[] for _ in range(12)]
         self.acc_res = np.zeros([self.num, ])
         self.f1_score = np.zeros([self.num, ])
         self.recall = np.zeros([self.num, ])
@@ -153,7 +153,7 @@ def predict(net_S, loss_Cls, dataloader_R, epoch, Savedir):
 
     contrastloss_S_log = AverageMeter()
     contrastloss = SupConLoss()
-    cls5_log = CLSCriterion(5)
+    cls12_log = CLSCriterion(12)
     softmax = nn.Softmax(dim=1)
     for batch_index, (patient, dlfea, rdmfea, cls) in enumerate(dataloader_R):
         dlfea = dlfea.cuda()
@@ -167,7 +167,7 @@ def predict(net_S, loss_Cls, dataloader_R, epoch, Savedir):
         contrast_errS = contrastloss(features, cls)
         errS = contrast_errS
 
-        cls5_log.update(result[0], cls)
+        cls12_log.update(result[0], cls)
         contrastloss_S_log.update(contrast_errS.item(), n=1)
 
         res = '\t'.join(['Valid Epoch: [%d]' % (epoch + 1),
@@ -182,17 +182,17 @@ def predict(net_S, loss_Cls, dataloader_R, epoch, Savedir):
         f.write(res + '\n')
         f.close()
 
-    cls5_log.cal(epoch, Savedir)
+    cls12_log.cal(epoch, Savedir)
 
     res = '\t'.join(['Valid Epoch: [%s]' % str(epoch + 1),
-                     '5Acc_%f' % cls5_log.acc,
+                     '5Acc_%f' % cls12_log.acc,
                      'ContrastLoss_%f' % contrastloss_S_log.sum])
     print(res)
     print()
     f = open(os.path.join(Savedir, 'valid.txt'), "a+")
     f.write(res + '\n')
     f.close()
-    return cls5_log.acc, cls5_log.f1_score.mean()
+    return cls12_log.acc, cls12_log.f1_score.mean()
 
 
 def train_net(n_epochs=2000, batch_size=32, model_name='demo'):
