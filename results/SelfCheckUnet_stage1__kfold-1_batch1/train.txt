@@ -1,0 +1,1 @@
+Epoch: [0]	SegLoss_0.649181	Dice_0.000000

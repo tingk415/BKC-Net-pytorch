@@ -16,7 +16,7 @@ import torch.nn as nn
 
 from model.ConAttUnet import ConAttUNet
 from utils.dataloader_seg import RCC3D
-from utils.loss import crossentropy, dice_coef, B_crossentropy
+from utils.loss_MedIA import  dice_coef, B_crossentropy
 
 class AverageMeter(object):
     def __init__(self):
@@ -37,6 +37,8 @@ def train_epoch(net_S, opt_S, loss_Seg, dice_S, dataloader_R, epoch, n_epochs, I
     dice_log = AverageMeter()
 
     net_S.train()
+    # image is the ct scan image
+    # gt is the segmentation
     for batch_index, (patient, image, gt) in enumerate(dataloader_R):
 
         opt_S.zero_grad()
@@ -107,14 +109,14 @@ def predict(net_S, loss_Seg, dice_S, dataloader_R, epoch, n_epochs, Savedir):
     return dice_log.avg, dice_log.avg
 
 
-def train_net(n_epochs=800, batch_size=1, lr=1e-4, model_name='demo'):
-    save_dir = 'results/' + model_name
-    checkpoint_dir = 'weights/' + model_name
+def train_net(n_epochs=800, batch_size=1, lr=1e-4, model_name='fpl'):
+    save_dir = 'results\\' + model_name
+    checkpoint_dir = 'weights\\' + model_name
     
     if not os.path.exists(save_dir):
-        os.mkdir(save_dir)
+        os.mkdir(os.path.abspath(save_dir))
     if not os.path.exists(checkpoint_dir):
-        os.mkdir(checkpoint_dir)
+        os.mkdir(os.path.abspath(checkpoint_dir))
 
     net_S = ConAttUNet(n_channels=1, n_classes=1)
 
@@ -176,6 +178,6 @@ if __name__ == '__main__':
     parser.add_argument('-net', type=str, default='SelfCheckUnet_stage1_', help='network type')
     parser.add_argument('-weight', type=str, help='network weight')
     args = parser.parse_args()
-#    torch.backends.cudnn.enabled = False
+#   torch.backends.cudnn.enabled = False
     train_net(model_name = args.net + '_kfold' + str(args.kfold) + '_batch' + str(args.b))
     

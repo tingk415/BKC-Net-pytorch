@@ -1,0 +1,5 @@
+Epoch: [0/800]	Iter: [1/5]	Loss: -0.165085
+Epoch: [0/800]	Iter: [2/5]	Loss: 0.241026
+Epoch: [0/800]	Iter: [3/5]	Loss: 0.801561
+Epoch: [0/800]	Iter: [4/5]	Loss: -0.363301
+Epoch: [0/800]	Iter: [5/5]	Loss: 0.134981

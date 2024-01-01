@@ -142,7 +142,7 @@ def predict(net_S, loss_Cls, dataloader_R, epoch, Savedir):
         rdmfea = rdmfea.cuda()
         ccrcc_cls = ccrcc_cls.cuda()
 
-        dl_x, rdm_x, cls2 = net_S(dlfea, rdmfea)
+        dl_x, rdm_x = net_S(dlfea, rdmfea)
         features = torch.cat([dl_x.unsqueeze(1), rdm_x.unsqueeze(1)], dim=1)
         X_valid = features.view(1, args.p*2).cpu().data.numpy()
         result = knn.predict(X_valid)
@@ -194,6 +194,8 @@ def train_net(n_epochs=2000, batch_size=32, model_name='demo'):
         os.mkdir(checkpoint_dir)
     print('dir:', checkpoint_dir)
 
+    # deep learning feature numbers
+    # radiomics feature numbers
     net_S = OneStageContrastDLRdm1(dlfeanum=1920, rdmfeanum=391, dimp=args.p)
 
     print("Total number of paramerters in networks is {}  ".format(sum(x.numel() for x in net_S.parameters())))

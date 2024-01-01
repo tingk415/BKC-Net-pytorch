@@ -110,7 +110,7 @@ def train_epoch(net_S, opt_S, loss_Cls, dataloader_R, epoch, n_epochs, Iters, Sa
         rdmfea = rdmfea.cuda()
         cls = cls.long().cuda()
 
-        dl_x, rdm_x, cls5 = net_S(dlfea, rdmfea)
+        dl_x, rdm_x  = net_S(dlfea, rdmfea)
         features = torch.cat([dl_x.unsqueeze(1), rdm_x.unsqueeze(1)], dim=1)
         # print(dl_x[0][:20])
         # print(rdm_x[0][:20])
@@ -160,7 +160,7 @@ def predict(net_S, loss_Cls, dataloader_R, epoch, Savedir):
         rdmfea = rdmfea.cuda()
         cls = cls.long().cuda()
 
-        dl_x, rdm_x, cls5 = net_S(dlfea, rdmfea)
+        dl_x, rdm_x  = net_S(dlfea, rdmfea)
         features = torch.cat([dl_x.unsqueeze(1), rdm_x.unsqueeze(1)], dim=1)
         X_valid = features.view(1, args.p * 2).cpu().data.numpy()
         result = knn.predict(X_valid)
